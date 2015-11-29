@@ -2,6 +2,8 @@
 ### https://earthview.withgoogle.com
 Earth View is a collection of the most beautiful and striking landscapes found in Google Earth.
 
+Note: I get the whole list though this script (https://github.com/limhenry/earthview/blob/master/script/parser.py) and the list is available here or in JSON format (https://raw.githubusercontent.com/limhenry/earthview/master/earthview.json)
+
 | Country                           | Region                                  | Image URL                                        | Google Maps URL                                               |
 | --------------------------------- | --------------------------------------- | ------------------------------------------------ | ------------------------------------------------------------- |
 | Australia                         | -                                       | www.gstatic.com/prettyearth/assets/full/1003.jpg | www.google.com/maps/@-10.040181,143.560709,12z/data=!3m1!1e3  |
