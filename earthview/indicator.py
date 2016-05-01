@@ -13,12 +13,14 @@ from gi.repository import Notify as notify
 
 APPINDICATOR_ID = 'myappindicator'
 
+
 def main():
     indicator = appindicator.Indicator.new(APPINDICATOR_ID, os.path.abspath('logo.png'), appindicator.IndicatorCategory.SYSTEM_SERVICES)
     indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
     indicator.set_menu(build_menu())
     notify.init(APPINDICATOR_ID)
     gtk.main()
+
 
 def build_menu():
     menu = gtk.Menu()
@@ -40,7 +42,7 @@ def changewallpaper(source):
     with open('data.json') as data_file:
         data = json.load(data_file)
 
-    rand = randint(0,1510)
+    rand = randint(0, 1510)
     data = data[rand]
     wallpaper = data["Image URL"]
     url = "http://" + wallpaper
