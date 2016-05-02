@@ -3,7 +3,7 @@ import json
 from bs4 import BeautifulSoup
 result = []
 file = open('output.txt','a')
-for x in xrange(1000, 7030): #You should able to run this in parallel, but I don't know how to do it
+for x in xrange(1000, 7030):
 	x = str(x)
 	try:
 		print "Fetching" + x + " ..."
@@ -20,6 +20,6 @@ for x in xrange(1000, 7030): #You should able to run this in parallel, but I don
 	except urllib2.HTTPError, e:
 		continue #If the page is 404, then it will skip to the next one
 
-meow = json.dumps(result) #because I love cat...
+meow = json.dumps(result)
 file.write(meow)			
 file.close()
