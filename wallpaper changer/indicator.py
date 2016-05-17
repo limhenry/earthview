@@ -1,5 +1,6 @@
 import signal
 import gi
+import time
 gi.require_version('Gtk', '3.0')
 gi.require_version('AppIndicator3', '0.1')
 gi.require_version('Notify', '0.7')
@@ -53,6 +54,10 @@ def changewallpaper(source):
     command = "gsettings set org.gnome.desktop.background picture-uri " + location
     os.system(command)
     notify.Notification.new("<b>Earth View Wallpaper Changer</b>", "Wallpaper changed successfully", None).show()
+    time.sleep(2)
+    killnotification = "killall notify-osd"
+    os.system(killnotification)
+
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal.SIG_DFL)
