@@ -1,25 +1,44 @@
 # Sayan Goswami (c) 6 July 2016
+# Modified by Alex Persian 7 Feb 2024
 import concurrent.futures
 import urllib.request
-from json import dumps
-from bs4 import BeautifulSoup
+import json
 
 result = []
 file = open('earthview.json','a')
 
-URLS = ['https://earthview.withgoogle.com/' + str(x) for x in range(1000,7030)]
+pid = open('photo_ids.json')
+photo_ids = json.load(pid)
+URLS = ['https://www.gstatic.com/prettyearth/assets/data/v3/' + str(x) + '.json' for x in photo_ids]
 
-# Retrieve a single page and report the URL and contents
+# Retrieve a single json response and format the contents
 def load_url(url, timeout):
-    with urllib.request.urlopen(url, timeout=timeout) as conn:
-        data =  conn.read()
-        html = BeautifulSoup(data,"html.parser")
-        Region = str((html.find("div", class_="content__location__region")).text)
-        Country = str((html.find("div", class_="content__location__country")).text)
-        Everything = html.find("a", id="globe", href=True)
-        GMapsURL = Everything['href']
-        Image = 'https://www.gstatic.com/prettyearth/assets/full/' + str(url.split('/')[-1]) + '.jpg'
-        a = {'region': Region, 'country': Country, 'map': GMapsURL, 'image': Image}
+    headers = { 'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.133 Safari/537.36' }
+    req = urllib.request.Request(url, headers=headers)
+
+    with urllib.request.urlopen(req, timeout=timeout) as conn:
+        data = json.load(conn)
+
+        id = data.get('id', '')
+
+        lat = data.get('lat', '')
+        lng = data.get('lng', '')
+        zoom = data.get('zoom', '')
+
+        if 'geocode' in data:
+            geocode = data.get('geocode', '')
+            country = geocode.get('country', '')
+            region = geocode.get('region', '')
+        else:
+            country = data.get('country', '')
+            region = data.get('region', '')
+
+        attribution = data.get('attribution', '')
+
+        image = 'https://www.gstatic.com/prettyearth/assets/full/' + str(id) + ".jpg"
+        gmapsURL = 'https://www.google.com/maps/@' + str(lat) + ',' + str(lng) + ',' + str(zoom) + 'z/data=!3m1!1e3'
+
+        a = {'id': id, 'region': region, 'country': country, 'map': gmapsURL, 'image': image, 'attribution': attribution}
         return a
 
 # We can use a with statement to ensure threads are cleaned up promptly
@@ -31,13 +50,17 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
         try:
             res = future.result()
         except Exception as exc:
+            print("Failed: " + str(url.split('/')[-1]) + " -> " + str(exc))
             pass
         else:
             # Do ya thing
             result.append(res)
             print("Fetched -> | " + str(url.split('/')[-1]) + " | ")
 
+def sort_by_id(e):
+    return e['id']
+result.sort(key=sort_by_id)
 
-final_file = dumps(result,indent=4) #Dump the json file finally
+final_file = json.dumps(result,indent=2) #Dump the json file finally
 file.write(final_file)
 file.close()
